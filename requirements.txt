@@ -7,7 +7,6 @@ lightning-bolts==0.6.0.post1
 lightning-lite==1.8.0
 lightning-utilities==0.3.0
 umap-learn==0.5.2
-numba==0.54.1
 pandas
 matplotlib
 seaborn
