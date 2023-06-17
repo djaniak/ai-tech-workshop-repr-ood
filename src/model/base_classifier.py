@@ -49,17 +49,7 @@ class BaseClassifier(LightningModule, abc.ABC):
             momentum=0.9,
             weight_decay=5e-4,
         )
-        steps_per_epoch = 45000 // self.hparams.batch_size
-        scheduler_dict = {
-            "scheduler": OneCycleLR(
-                optimizer,
-                0.1,
-                epochs=self.trainer.max_epochs,
-                steps_per_epoch=steps_per_epoch,
-            ),
-            "interval": "step",
-        }
-        return {"optimizer": optimizer, "lr_scheduler": scheduler_dict}
+        return {"optimizer": optimizer}
 
 
 class SimCLRClassifier(BaseClassifier):
@@ -74,7 +64,8 @@ class SimCLRClassifier(BaseClassifier):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         z = self.model(x)
-        return self.classifier(z)
+        out = self.classifier(z)
+        return F.log_softmax(out, dim=1)
 
     def training_step(self, batch: Any, batch_idx: int) -> torch.Tensor:
         (x1, x2, x3), y = batch

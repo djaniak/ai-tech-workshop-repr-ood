@@ -7,13 +7,15 @@ from pytorch_lightning import LightningModule
 from torch.utils.data.dataloader import DataLoader
 
 
-def get_preds_and_labels(model, dataloader):
+def get_preds_and_labels(
+        model: LightningModule, dataloader: DataLoader, device: Union[torch.device, str]
+) -> tuple[torch.Tensor, torch.Tensor]:
     target = []
     preds = []
     for batch in tqdm.tqdm(dataloader):
         x, y = batch
         with torch.no_grad():
-            logits = model(x)
+            logits = model(x.to(device)).cpu()
         preds.append(F.softmax(logits, dim=1))
         target.append(y)
     preds = torch.vstack(preds)
